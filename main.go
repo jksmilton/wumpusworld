@@ -3,13 +3,16 @@ package main
 import "fmt"
 
 func main() {
-	world := BuildWorld(coordinate{4, 4})
-	drawWorld(world)
+	theWorld := BuildWorld(coordinate{10, 10})
+	drawWorld(theWorld)
+	percepts := theWorld.DoAction(0)
+	fmt.Printf("%v\n", percepts)
+	fmt.Println("Press enter for next turn")
 }
 
-func drawWorld(world [][]int) {
-	y := len(world)
-	x := len(world[1])
+func drawWorld(theWorld world) {
+	y := len(theWorld.worldMap)
+	x := len(theWorld.worldMap[1])
 
 	fmt.Printf("\n")
 
@@ -22,7 +25,12 @@ func drawWorld(world [][]int) {
 			}
 		} else {
 			for j := 0; j < x; j++ {
-				fmt.Print(pickLetter(world[y-(i+1)][j]))
+				crntLoc := coordinate{j, y - (i + 1)}
+				if theWorld.playerLoc == crntLoc {
+					fmt.Print(pickLetter(SymPlayer))
+				} else {
+					fmt.Print(pickLetter(theWorld.worldMap[y-(i+1)][j]))
+				}
 			}
 		}
 
@@ -30,7 +38,6 @@ func drawWorld(world [][]int) {
 
 	}
 
-	fmt.Println("Press enter for next turn")
 }
 
 func pickLetter(sym int) string {
