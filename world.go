@@ -1,6 +1,7 @@
 package main
 
 import "math/rand"
+import "time"
 
 const propWall int = 10
 const propMon int = 10 + propWall
@@ -63,7 +64,7 @@ func (thisWorld *world) DoAction(action int) Senses {
 
 	if action >= PickUpMask {
 		thisWorld.handlePickup()
-	} else if action >= ShootMask {
+	} else if action > ShootMask {
 		crntSenses = thisWorld.handleShoot(action-ShootMask, crntSenses)
 	} else {
 		crntSenses = thisWorld.handleMov(action-MovMask, crntSenses)
@@ -114,7 +115,7 @@ func (thisWorld *world) checkSquare(crntSenses Senses, loc coordinate) Senses {
 
 func BuildWorld(size coordinate) world {
 	newWorld := make([][]int, size.y)
-
+	rand.Seed(int64(time.Now().Nanosecond()))
 	for i := 0; i < size.y; i++ {
 		newWorld[i] = make([]int, size.x)
 

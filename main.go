@@ -3,16 +3,42 @@ package main
 import "fmt"
 import "os"
 import "strconv"
+import "bufio"
 
 func main() {
 	dimensions := getDimensions()
 	action := 0
+
+	scanner := bufio.NewScanner(os.Stdin)
+
 	theWorld := BuildWorld(dimensions)
 	drawWorld(theWorld)
 	percepts := theWorld.DoAction(action)
 	fmt.Printf("%v\n", percepts)
 	writeAction(action, percepts)
 	fmt.Println("Press enter for next turn")
+	scanner.Scan()
+
+	continueRun := true
+
+	for continueRun {
+		action = DoAction()
+		percepts = theWorld.DoAction(action)
+		fmt.Printf("%v\n", percepts)
+		drawWorld(theWorld)
+		writeAction(action, percepts)
+		fmt.Println("Press enter for next turn")
+		scanner.Scan()
+
+		if percepts[Gobble] || percepts[Fall] {
+			fmt.Println("Game Over")
+			continueRun = false
+		} else if theWorld.hasGold && theWorld.playerLoc.x == 0 && theWorld.playerLoc.y == 0 {
+			fmt.Println("Agent wins")
+			continueRun = false
+		}
+	}
+
 }
 
 func getDimensions() coordinate {
@@ -46,8 +72,8 @@ func parseArgument(arg string) int {
 
 func writeAction(action int, percepts Senses) {
 	if action == PickUpMask {
-		fmt.Print("Attempted to pick up gold")
-	} else if action >= ShootMask {
+		fmt.Println("Attempted to pick up gold")
+	} else if action > ShootMask {
 		fmt.Print("Attempted to shoot ")
 		switch action - ShootMask {
 		case LeftMask:
@@ -63,7 +89,7 @@ func writeAction(action int, percepts Senses) {
 		}
 	} else {
 		fmt.Print("Attempted to move ")
-		switch action - ShootMask {
+		switch action {
 		case LeftMask:
 			fmt.Printf("left\n")
 		case RightMask:
