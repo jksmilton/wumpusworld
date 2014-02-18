@@ -1,13 +1,107 @@
 package main
 
 import "fmt"
+import "os"
+import "strconv"
 
 func main() {
-	theWorld := BuildWorld(coordinate{10, 10})
+	dimensions := getDimensions()
+	action := 0
+	theWorld := BuildWorld(dimensions)
 	drawWorld(theWorld)
-	percepts := theWorld.DoAction(0)
+	percepts := theWorld.DoAction(action)
 	fmt.Printf("%v\n", percepts)
+	writeAction(action, percepts)
 	fmt.Println("Press enter for next turn")
+}
+
+func getDimensions() coordinate {
+	arguments := os.Args[1:]
+
+	x := 4
+	y := 4
+
+	if len(arguments) == 1 {
+		dimensionSize := parseArgument(arguments[0])
+		x = dimensionSize
+		y = dimensionSize
+	} else if len(arguments) >= 2 {
+		x = parseArgument(arguments[0])
+		y = parseArgument(arguments[1])
+	}
+
+	return coordinate{x, y}
+
+}
+
+func parseArgument(arg string) int {
+	i, err := strconv.Atoi(arg)
+	if err != nil {
+		// handle error
+		fmt.Println(err)
+		os.Exit(2)
+	}
+	return i
+}
+
+func writeAction(action int, percepts Senses) {
+	if action == PickUpMask {
+		fmt.Print("Attempted to pick up gold")
+	} else if action >= ShootMask {
+		fmt.Print("Attempted to shoot ")
+		switch action - ShootMask {
+		case LeftMask:
+			fmt.Printf("left\n")
+		case RightMask:
+			fmt.Printf("right\n")
+		case UpMask:
+			fmt.Printf("up\n")
+		case DownMask:
+			fmt.Printf("down\n")
+		default:
+			fmt.Printf("nowhere\n")
+		}
+	} else {
+		fmt.Print("Attempted to move ")
+		switch action - ShootMask {
+		case LeftMask:
+			fmt.Printf("left\n")
+		case RightMask:
+			fmt.Printf("right\n")
+		case UpMask:
+			fmt.Printf("up\n")
+		case DownMask:
+			fmt.Printf("down\n")
+		default:
+			fmt.Printf("nowhere\n")
+		}
+	}
+
+	if percepts[Bump] {
+		fmt.Println("Bumped into a wall")
+	}
+	if percepts[Fall] {
+		fmt.Println("Fell down a hole")
+	}
+	if percepts[Smell] {
+		fmt.Println("Smelled a nearby wumpus")
+	}
+	if percepts[Wind] {
+		fmt.Println("Felt a breeze from a nearby hole")
+	}
+	if percepts[Glimmer] {
+		fmt.Println("Saw a glimmer of gold")
+	}
+	if percepts[Gobble] {
+		fmt.Println("Got eaten by a wumpus")
+	}
+	if percepts[Scream] {
+		fmt.Println("Heard a scream")
+	}
+	if percepts[GotGold] {
+		fmt.Println("Is carrying the gold")
+	}
+
 }
 
 func drawWorld(theWorld world) {

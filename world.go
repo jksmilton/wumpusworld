@@ -1,7 +1,6 @@
 package main
 
 import "math/rand"
-import "fmt"
 
 const propWall int = 10
 const propMon int = 10 + propWall
@@ -30,10 +29,10 @@ func (thisWorld *world) moveTo(loc coordinate, crntSenses Senses) Senses {
 	x := len(thisWorld.worldMap[0])
 
 	if loc.x >= x || loc.x < 0 || loc.y >= y || loc.y < 0 {
-		fmt.Println("Bumped into a wall")
+
 		crntSenses[Bump] = true
 	} else if thisWorld.worldMap[loc.y][loc.x] == SymWall {
-		fmt.Println("Bumped into a wall")
+
 		crntSenses[Bump] = true
 	} else {
 		thisWorld.playerLoc = loc
