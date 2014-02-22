@@ -14,6 +14,31 @@ type world struct {
 }
 
 func (thisWorld *world) handleShoot(direction int, crntSenses Senses) Senses {
+	y := len(thisWorld.worldMap)
+	x := len(thisWorld.worldMap[0])
+
+	currentSquare := thisWorld.playerLoc
+
+	for currentSquare.x >= 0 && currentSquare.y >=0 && currentSquare.x < x && currentSquare.y < y {
+		if thisWorld.worldMap[currentSquare.y][currentSquare.x] == SymMon {
+			thisWorld.worldMap[currentSquare.y][currentSquare.x] = SymEmpty
+			currentSquare = coordinate{-1, -1}
+			crntSenses[Scream] = true
+		} else if thisWorld.worldMap[currentSquare.y][currentSquare.x] == SymWall {
+			currentSquare = coordinate{-1, -1}
+		}
+		switch direction {
+		case LeftMask:
+			currentSquare.x = currentSquare.x - 1
+		case UpMask:
+			currentSquare.y += 1
+		case RightMask:
+			currentSquare.x += 1
+		case DownMask:
+			currentSquare.y = currentSquare.y - 1
+		}
+	}
+
 	return crntSenses
 }
 
