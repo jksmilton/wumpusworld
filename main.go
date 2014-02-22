@@ -21,10 +21,12 @@ func main() {
 
 	continueRun := true
 
-	agent := randAgent{coordinate{0,0}, false}
+	//agent := randAgent{coordinate{0,0}, false}
+	reactive := reactiveAgent{coordinate{0,0}, true}
 
 	for continueRun {
-		action = agent.DoAction()
+		//action = agent.DoAction()
+		action = reactive.DoAction(percepts)
 		percepts = theWorld.DoAction(action)
 		fmt.Printf("%v\n", percepts)
 		drawWorld(theWorld)
